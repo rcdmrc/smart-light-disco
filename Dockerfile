@@ -5,4 +5,5 @@ RUN apt upgrade -y
 RUN apt install -y nodejs npm
 COPY . /app
 WORKDIR /app
+RUN npm install
 ENTRYPOINT [ "npm", "start" ]

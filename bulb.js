@@ -69,7 +69,6 @@ class BulbParty {
   }
 
   async setBulbNextColor(bulb) {
-    console.log('Now changing: ' + bulb.label)
     await bulb.setNextColor()
   }
 

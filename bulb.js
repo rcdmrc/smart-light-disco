@@ -42,13 +42,13 @@ class BulbWrapper {
    * @returns 
    */
   getNextColor() {
-
+    const index = this.color_index
     if ( this.color_index + 1 < this.colors.length ) {
       this.color_index += 1
     } else {
       this.color_index = 0
     }
-    let color = this.colors[this.color_index]
+    let color = this.colors[index]
     return this.color_palette.get(color)
   }
 

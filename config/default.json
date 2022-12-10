@@ -1,0 +1,66 @@
+{
+    "change_interval": 3000,
+    "transition_period": 300,
+    "color_palette": {
+        "blue": {
+            "hue": 239,
+            "saturation": 99,
+            "colorTemp": 0
+        },
+        "red": {
+            "hue": 0,
+            "saturation": 100,
+            "colorTemp": 0
+        },
+        "green": {
+            "hue": 120,
+            "saturation": 100,
+            "colorTemp": 0
+        },
+        "purple": {
+            "hue": 300,
+            "saturation": 100,
+            "colorTemp": 0
+        },
+        "yellow": {
+            "hue": 60,
+            "saturation": 100,
+            "colorTemp": 0
+        },
+        "pink": {
+            "hue": 349,
+            "saturation": 24,
+            "colorTemp": 0
+        },
+        "brown": {
+            "hue": 30,
+            "saturation": 100,
+            "colorTemp": 0
+        },
+        "white": {
+            "hue": 0,
+            "saturation": 0,
+            "colorTemp": 5000
+        }
+    },
+    "bulbs": [
+        {
+            "host": "192.168.57.61",
+            "label": "Bulb1",
+            "colors": [
+                "red",
+                "green"
+            ],
+            "initial_color": "green"
+        },
+        {
+            "host": "192.168.57.60",
+            "label": "Bulb2",
+            "colors": [
+                "red",
+                "green"
+            ],
+            "initial_color": "red"
+        }
+    ]
+}

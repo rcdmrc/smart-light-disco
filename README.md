@@ -1,42 +1,16 @@
-Disco Mode For Smart Lights*
-===
+# Party Mode For Supported TP-LINK Smart Bulbs
 
-![](disco_720.gif)
+This is a modification of [smart-light-disco](https://github.com/jrudio/smart-light-disco):
 
-**Bulbs supported:**
+1. Adds support for more than one light bulb.
+2. Uses NodeJS configuration files to describe the behavior. You'll be able to configure simple patterns in which all light bulbs change to the next configured color, in lockstep.
+3. Support for describing a custom color palette via the configuration files.
 
-- Kasa KL130
+My goal was to control two light bulbs to cycle through a set of colors, each bulb starting with a different color.
 
-Planned support:
+## Installation
 
-- A19 C by GE
+1. Install the requirements with: `npm install`
+2. Create a nodejs config file in the `config/` directory. More info about NodeJS config files [here](https://www.npmjs.com/package/config). 
+3. Start the server with: `npm start`
 
-* Only a select few smart bulbs are supported due to access to these bulbs
-
-How to use
-===
-
-`npm install smart-light-disco`
-
-```
-const { Client } = require('tplink-smarthome-api');
-const BulbWrapper = require('smart-light-disco');
-
-const client = new Client();
-
-(async () => {
-  const device = await client.getDevice({ host: '192.168.254.35' })
-
-  const isOn = await device.getPowerState()
-
-  if (!isOn) {
-    await device.togglePowerState()
-  }
-
-  // pass in the device
-  const bulb = new BulbWrapper(device)
-
-  // fire up disco
-  bulb.startDisco(750)
-})()
-```

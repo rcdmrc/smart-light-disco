@@ -1,78 +1,29 @@
-// BulbWrapper wraps around the bulb from 'tplink-smarthome-api'
+require('log-timestamp');
+const assert = require('assert');
+
 class BulbWrapper {
-  constructor (bulb) {
+  constructor (label, bulb, color_palette, colors, initial_color = null, transition_period = 500) {
+    this.label = label
     this.bulb = bulb
-    this.hue = 0
-    this.saturation = 0
-    this.colorTemp = 0
-    this.brightness = 0
-    this.discoInterval = null
-  }
+    this.color_palette = color_palette
+    this.colors = colors
+    this.brightness = 100
+    this.transition_period = transition_period
 
-  static Blue () {
-    return {
-      hue: 239,
-      saturation: 99,
-      colorTemp: 0,
+    assert ( this.colors != null && this.colors.length > 1)
+    if ( initial_color == null ) {
+      this.color_index = 0
+    } else {
+      assert( this.colors.indexOf(initial_color) > -1 /* initial_color is not valid */)
+      this.color_index = initial_color == null ? 0: this.colors.indexOf(initial_color)
     }
-  }
-
-  static Red () {
-    return {
-      hue: 0,
-      saturation: 100,
-      colorTemp: 0,
-    }
-  }
-
-  static Green () {
-    return {
-      hue: 120,
-      saturation: 100,
-      colorTemp: 0,
-    }
-  }
-
-  static Purple () {
-    return {
-      hue: 300,
-      saturation: 100,
-      colorTemp: 0,
-    }
-  }
-
-  // Pink not pink, it's like a peach
-  static Pink () {
-    return {
-      hue: 349,
-      saturation: 24,
-      colorTemp: 0,
-    }
-  }
-
-  static Brown () {
-    return {
-      hue: 30,
-      saturation: 100,
-      colorTemp: 0,
-    }
-  }
-
-  static White () {
-    return {
-      hue: 0,
-      saturation: 0,
-      colorTemp: 5000,
-    }
+    assert ( this.color_index > -1 /* initial_color is not part of the color selection */)
   }
 
   setColor (color) {
-    if (!color) {
-      throw new Error('invalid bulb color')
-    }
-
     const defaults = {
-      brightness: 100
+      brightness: this.brightness,
+      transition_period: this.transition_period
     }
 
     const lightSettings = Object.assign(
@@ -86,45 +37,53 @@ class BulbWrapper {
     return this.bulb.lighting.setLightState(lightSettings)
   }
 
-  startDisco (changeInterval = 1000) {
-    const getRandomColor = (previousColor = undefined) => {
-      const colors = [
-        'brown',
-        'red',
-        'blue',
-        'purple',
-        'pink',
-        'green',
-      ]
+  /**
+   * Returns the definition of the next color in the list
+   * @returns 
+   */
+  getNextColor() {
 
-      const randomIndex = () => Math.floor(Math.random() * colors.length)
-
-      const toMethodName = (color) => {
-        const firstToUpper = color[0].toUpperCase()
-
-        return firstToUpper + color.slice(1)
-      }
-
-      let index = randomIndex()
-
-      let color = colors[index]
-
-      if (!color) {
-        return ''
-      } else if (previousColor === color) {
-        color = getRandomColor(previousColor)
-      }
-
-      return toMethodName(color)
+    if ( this.color_index + 1 < this.colors.length ) {
+      this.color_index += 1
+    } else {
+      this.color_index = 0
     }
+    let color = this.colors[this.color_index]
+    return this.color_palette.get(color)
+  }
 
-    this.discoInterval = setInterval(async () => {
-      let color = getRandomColor()
-
-      // console.log(`setting bulb color to ${color}`)
-      await this.setColor(BulbWrapper[color]())
-    }, changeInterval);
+  /**
+   * Change the color to the next one on the list
+   */
+  async setNextColor() {
+    let color = this.getNextColor()
+    this.setColor(color)
   }
 }
 
-module.exports = BulbWrapper
+class BulbParty {
+  constructor (bulbs, change_interval) {
+    this.bulbs = bulbs
+    this.changeInterval = change_interval
+    this.interval = null
+  }
+
+  async setBulbNextColor(bulb) {
+    console.log('Now changing: ' + bulb.label)
+    await bulb.setNextColor()
+  }
+
+  async setNextColor(changeInterval) {
+    const tasks = this.bulbs.map(this.setBulbNextColor)
+    const results = await Promise.all(tasks)
+    this.interval = setTimeout(async () => { this.setNextColor() }, this.changeInterval);
+  }
+
+  startParty () {
+
+    this.setNextColor(this.changeInterval)
+  }
+}
+
+exports.BulbParty = BulbParty
+exports.BulbWrapper = BulbWrapper

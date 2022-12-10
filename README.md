@@ -14,3 +14,15 @@ My goal was to control two light bulbs to cycle through a set of colors, each bu
 2. Create a nodejs config file in the `config/` directory. More info about NodeJS config files [here](https://www.npmjs.com/package/config). 
 3. Start the server with: `npm start`
 
+## Using In A Docker Container
+
+Build the image:
+
+```bash
+docker build . -t smart-light-disco
+```
+
+Use the image with your own config file:
+```bash
+docker run -v /path/to/your/config.json:/app/config/default.json:ro -d --name smart-light-disco smart-light-disco
+```
